@@ -1,5 +1,4 @@
 package sections;
-// TODO: need to figure out how to make it have three different work experiences as possibilities
 
 import javax.swing.*;
 
@@ -13,7 +12,7 @@ import java.awt.*;
 public class WorkExperience {
     
     protected static void createAndShowGUI() {
-        String[] labels = {"Company: ", "Position: ", "Major: ", "Time period: ", "Description(1st bullet point): ", "Description(2nd bullet point): ", "Description(3rd bullet point): "};
+        String[] labels = {"Company: ", "Position: ", "Time period: ", "Description(1st bullet point): ", "Description(2nd bullet point): ", "Description(3rd bullet point): "};
         int numPairs = labels.length;
     
         //Create and populate the panel.
@@ -54,11 +53,19 @@ public class WorkExperience {
                   f.printStackTrace();
               }
 
-            Projects.createAndShowGUI();
-            
-            // Close the current window
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
-            frame.dispose();
+              // Ask for the next work experience
+              int response = JOptionPane.showConfirmDialog(null, "Do you want to add another work experience?", "Work Experience", JOptionPane.YES_NO_OPTION);
+              if (response == JOptionPane.YES_OPTION) {
+                  // Create another window for the next work experience
+                  createAndShowGUI();
+              } else {
+                  // Continue to the projects section
+                  Projects.createAndShowGUI();
+
+                  // Close the current window
+                  JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
+                  frame.dispose();
+              }
           }
       });
         
@@ -88,7 +95,6 @@ public class WorkExperience {
         frame.setVisible(true);
     }
     
-    
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -97,5 +103,5 @@ public class WorkExperience {
                 createAndShowGUI();
             }
         });
-      }
+    }
 }
