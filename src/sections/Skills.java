@@ -51,10 +51,12 @@ public class Skills {
               } catch (IOException f) {
                   f.printStackTrace();
               }
-
+              ResumeGenerator resumeGenerator = new ResumeGenerator();
             // Close the current window
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
             frame.dispose();
+
+            resumeGenerator.run();
           }
       });
         
