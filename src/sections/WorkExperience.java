@@ -5,11 +5,19 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.awt.*;
 
 public class WorkExperience {
+
+    public static Map<String, String> workExperienceInfo = new HashMap<>();
     
     protected static void createAndShowGUI() {
         String[] labels = {"Company: ", "Position: ", "Time period: ", "Description(1st bullet point): ", "Description(2nd bullet point): ", "Description(3rd bullet point): "};
@@ -34,40 +42,47 @@ public class WorkExperience {
         //Create the save button
         JButton saveButton = new JButton("Save and continue");
         saveButton.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              //Save the information entered by the user
-              Component[] components = p.getComponents();
-              File file = new File("WorkExperience.txt");
-              try {
-                  FileWriter output = new FileWriter(file, true); // append mode
-                  BufferedWriter writer = new BufferedWriter(output);
-                  for (Component c : components) {
-                      if (c instanceof JTextField) {
-                          JTextField textField = (JTextField) c;
-                          String text = textField.getText();
-                          writer.write(text + "\n"); // add a new line
-                      }
-                  }
-                  writer.close();
-              } catch (IOException f) {
-                  f.printStackTrace();
-              }
+            public void actionPerformed(ActionEvent e) {
+                // Save the information entered by the user
+                Component[] components = p.getComponents();
+                workExperienceInfo = new HashMap<>();
+                for (int i = 0; i < numPairs; i++) {
+                    Component component = components[i * 2 + 1];
+                    if (component instanceof JTextField) {
+                        JTextField textField = (JTextField) component;
+                        String text = textField.getText();
+                        workExperienceInfo.put(labels[i], text);
+                    }
+                }
 
-              // Ask for the next work experience
-              int response = JOptionPane.showConfirmDialog(null, "Do you want to add another work experience?", "Work Experience", JOptionPane.YES_NO_OPTION);
-              if (response == JOptionPane.YES_OPTION) {
-                  // Create another window for the next work experience
-                  createAndShowGUI();
-              } else {
-                  // Continue to the projects section
-                  Projects.createAndShowGUI();
+                // Load the existing properties file
+                Properties properties = new Properties();
+                try (FileInputStream fis = new FileInputStream("data.properties")) {
+                    properties.load(fis);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
-                  // Close the current window
-                  JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
-                  frame.dispose();
-              }
-          }
-      });
+                // Update the properties with the new values
+                for (Map.Entry<String, String> entry : workExperienceInfo.entrySet()) {
+                    properties.setProperty(entry.getKey(), entry.getValue());
+                }
+
+                // Save the updated properties to the file
+                try (FileOutputStream fos = new FileOutputStream("data.properties")) {
+                    properties.store(fos, null);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                // Create and show an instance of the Education class
+                Projects.createAndShowGUI();
+
+                // Close the current window
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
+                frame.dispose();
+            }
+        });
         
         //Create and set up the window.
         JFrame frame = new JFrame("CV Generator");
@@ -94,6 +109,10 @@ public class WorkExperience {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    public static Map<String, String> getWorkMap() {
+        return workExperienceInfo;
+    } 
     
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:

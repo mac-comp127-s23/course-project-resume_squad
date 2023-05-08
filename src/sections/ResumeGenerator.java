@@ -2,77 +2,81 @@ package sections;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
 
 public class ResumeGenerator {
 
-    private JFrame frame;
-
-    public ResumeGenerator() {
-        frame = new JFrame("Resume Generator");
+    public static void createAndShowGUI(Properties data) {
+        
+        // Create and set up the window
+        JFrame frame = new JFrame("Resume");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(800, 400));
+
+        // Set the layout for the content pane
+        frame.getContentPane().setLayout(new BorderLayout());
+
+        // Create and add the header panel
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BorderLayout());
+        JLabel nameLabel = new JLabel(data.getProperty("Full Name: "));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 26));  // Updated font size and style
+        headerPanel.add(nameLabel, BorderLayout.CENTER);
+        frame.getContentPane().add(headerPanel, BorderLayout.NORTH);
+
+        // Create and add the information panel
+        JPanel infoPanel = new JPanel(new GridLayout(0, 1));
+        
+        // Create and add email label
+        JLabel emailLabel = new JLabel("Email: " + data.getProperty("Email: "));
+        emailLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        emailLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));  // Updated font size and style
+        infoPanel.add(emailLabel);
+        
+        // Create and add phone number label
+        JLabel phoneLabel = new JLabel("Phone Number: " + data.getProperty("Phone Number: "));
+        phoneLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        phoneLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));  // Updated font size and style
+        infoPanel.add(phoneLabel);
+        
+        // Create and add LinkedIn label
+        JLabel linkedinLabel = new JLabel("LinkedIn: " + data.getProperty("LinkedIn: "));
+        linkedinLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        linkedinLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));  // Updated font size and style
+        infoPanel.add(linkedinLabel);
+        
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));  // Add some padding
+        
+        // Make the email, phone number, and LinkedIn labels appear in a row with " || " separators
+        infoPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        infoPanel.add(emailLabel);
+        infoPanel.add(new JLabel(" || "));
+        infoPanel.add(phoneLabel);
+        infoPanel.add(new JLabel(" || "));
+        infoPanel.add(linkedinLabel);
+
+        frame.getContentPane().add(infoPanel, BorderLayout.CENTER);
+        frame.setPreferredSize(new Dimension(1000, 800));
+
+        // Make the window visible
+        frame.pack();
         frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
-    public void generateResume() {
-        JPanel contentPane = new JPanel(new BorderLayout());
-        frame.setContentPane(contentPane);
-
-        JLabel titleLabel = new JLabel("Resume", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(titleLabel, BorderLayout.CENTER);
-        contentPane.add(topPanel, BorderLayout.NORTH);
-
-        JPanel resumePanel = new JPanel(new GridLayout(0, 2));
-        contentPane.add(resumePanel, BorderLayout.CENTER);
-
+    public static void main(String[] args) {
+        // Load the properties from the file
+        Properties properties = new Properties();
         try {
-            addSectionToPanel(resumePanel, "Primary Information", "PrimaryInformation.txt");
-            addSectionToPanel(resumePanel, "Education", "Education.txt");
-            addSectionToPanel(resumePanel, "Work Experience", "WorkExperience.txt");
-            addSectionToPanel(resumePanel, "Skills", "Skills.txt");
+            properties.load(new FileInputStream("data.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        frame.pack();
-        frame.setVisible(true);
+        // Create and show an instance of the ResumeGenerator class
+        createAndShowGUI(properties);
     }
-
-    private void addSectionToPanel(JPanel panel, String sectionTitle, String fileName) throws IOException {
-        JPanel sectionPanel = new JPanel(new SpringLayout());
-        BufferedReader reader = new BufferedReader(new FileReader(fileName));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            JLabel label = new JLabel(line, JLabel.TRAILING);
-            sectionPanel.add(label);
-            JTextField textField = new JTextField(20);
-            label.setLabelFor(textField);
-            textField.setText(line);
-            textField.setEditable(false);
-            sectionPanel.add(textField);
-        }
-        reader.close();
-        SpringUtilities.makeCompactGrid(sectionPanel, sectionPanel.getComponentCount() / 2, 2, 6, 6, 15, 10);
-        panel.add(new JLabel(sectionTitle));
-        panel.add(sectionPanel);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ResumeGenerator generator = new ResumeGenerator();
-            generator.generateResume();
-        });
-    }
-
-    public static void run() {
-        SwingUtilities.invokeLater(() -> {
-            ResumeGenerator generator = new ResumeGenerator();
-            generator.generateResume();
-    });
-}
 }

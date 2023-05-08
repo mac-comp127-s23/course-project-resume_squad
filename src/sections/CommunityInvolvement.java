@@ -4,14 +4,21 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.awt.*;
 
 public class CommunityInvolvement {
 
+    public static Map<String, String> communityInvolvementInfo = new HashMap<>();
+
     protected static void createAndShowGUI() {
-        String[] labels = {"Organization: ", "Role: ", "Time period: ", "Description(1st bullet point): ", "Description(2nd bullet point): ", "Description(3rd bullet point): "};
+        String[] labels = {"Organization: ", "Role: ", "Duration: ", "Describe(1st bullet point): ", "Describe(2nd bullet point): ", "Describe(3rd bullet point): "};
         int numPairs = labels.length;
     
         //Create and populate the panel.
@@ -33,26 +40,47 @@ public class CommunityInvolvement {
         //Create the save button
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              //Save the information entered by the user
-              Component[] components = p.getComponents();
-              File file = new File("Involvement.txt");
-              try {
-                  FileWriter output = new FileWriter(file, true); // append mode
-                  BufferedWriter writer = new BufferedWriter(output);
-                  for (Component c : components) {
-                      if (c instanceof JTextField) {
-                          JTextField textField = (JTextField) c;
-                          String text = textField.getText();
-                          writer.write(text + "\n"); // add a new line
-                      }
-                  }
-                  writer.close();
-              } catch (IOException f) {
-                  f.printStackTrace();
-              }
-          }
-      });
+            public void actionPerformed(ActionEvent e) {
+                //Save the information entered by the user
+                Component[] components = p.getComponents();
+                communityInvolvementInfo = new HashMap<>();
+                for (int i = 0; i < numPairs; i++) {
+                    Component component = components[i * 2 + 1];
+                    if (component instanceof JTextField) {
+                        JTextField textField = (JTextField) component;
+                        String text = textField.getText();
+                        communityInvolvementInfo.put(labels[i], text);
+                    }
+                }
+                
+                // Load the existing properties file
+                Properties properties = new Properties();
+                try (FileInputStream fis = new FileInputStream("data.properties")) {
+                    properties.load(fis);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                
+                // Update the properties with the new values
+                for (Map.Entry<String, String> entry : communityInvolvementInfo.entrySet()) {
+                    properties.setProperty(entry.getKey(), entry.getValue());
+                }
+                
+                // Save the updated properties to the file
+                try (FileOutputStream fos = new FileOutputStream("data.properties")) {
+                    properties.store(fos, null);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+  
+                // Create and show an instance of the WorkExperience class
+                Skills.createAndShowGUI();
+                
+                // Close the current window
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
+                frame.dispose();
+            }
+        });
         
         //Create and set up the window.
         JFrame frame = new JFrame("CV Generator");

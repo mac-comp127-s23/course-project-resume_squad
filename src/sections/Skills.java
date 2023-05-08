@@ -4,11 +4,18 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.awt.*;
 
 public class Skills {
+
+    public static Map<String, String> skillsInfo = new HashMap<>();
 
     protected static void createAndShowGUI() {
         String[] labels = {"Specific Skills: ", "Languages Spoken: ", "Interests: "};
@@ -33,32 +40,47 @@ public class Skills {
         //Create the save button
         JButton saveButton = new JButton("Save and finish");
         saveButton.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              //Save the information entered by the user
-              Component[] components = p.getComponents();
-              File file = new File("Skills.txt");
-              try {
-                  FileWriter output = new FileWriter(file, true); // append mode
-                  BufferedWriter writer = new BufferedWriter(output);
-                  for (Component c : components) {
-                      if (c instanceof JTextField) {
-                          JTextField textField = (JTextField) c;
-                          String text = textField.getText();
-                          writer.write(text + "\n"); // add a new line
-                      }
-                  }
-                  writer.close();
-              } catch (IOException f) {
-                  f.printStackTrace();
-              }
-              ResumeGenerator resumeGenerator = new ResumeGenerator();
-            // Close the current window
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
-            frame.dispose();
+            public void actionPerformed(ActionEvent e) {
+                // Save the information entered by the user
+                Component[] components = p.getComponents();
+                skillsInfo = new HashMap<>();
+                for (int i = 0; i < numPairs; i++) {
+                    Component component = components[i * 2 + 1];
+                    if (component instanceof JTextField) {
+                        JTextField textField = (JTextField) component;
+                        String text = textField.getText();
+                        skillsInfo.put(labels[i], text);
+                    }
+                }
 
-            resumeGenerator.run();
-          }
-      });
+                // Load the existing properties file
+                Properties properties = new Properties();
+                try (FileInputStream fis = new FileInputStream("data.properties")) {
+                    properties.load(fis);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                // Update the properties with the new values
+                for (Map.Entry<String, String> entry : skillsInfo.entrySet()) {
+                    properties.setProperty(entry.getKey(), entry.getValue());
+                }
+
+                // Save the updated properties to the file
+                try (FileOutputStream fos = new FileOutputStream("data.properties")) {
+                    properties.store(fos, null);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                // Create and show an instance of the Education class
+                ResumeGenerator.createAndShowGUI(properties);
+
+                // Close the current window
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(p);
+                frame.dispose();
+            }
+        });
         
         //Create and set up the window.
         JFrame frame = new JFrame("CV Generator");
@@ -85,6 +107,10 @@ public class Skills {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+    
+    public static Map<String, String> getSkillsMap() {
+        return skillsInfo;
+    } 
     
     
     public static void main(String[] args) {
