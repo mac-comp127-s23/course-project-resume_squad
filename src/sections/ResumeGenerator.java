@@ -263,6 +263,6 @@ public class ResumeGenerator {
         }
 
         // Create and show an instance of the ResumeGenerator class
-        createAndShowGUI(properties);
+        PrimaryInfo.createAndShowGUI();
     }
 }

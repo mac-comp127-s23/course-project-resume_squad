@@ -16,7 +16,8 @@
         The main class is in the ‘ResumeGenerator.java’ class in the source code under the ‘sections’ package.
 
 * Acknowledge any help, references, inspiration, or outside resources you used. If your game includes any art or sound assets, or includes the work of others in any way, credit the creator(s) and link to the source(s).
-    * To be done
+    
+    We had some help from StackOverflow. This is how we figured out that the best data storing method is by creating a properties file.
 
 ## Known Issues
 * Are there fundamental design limitations that users should be aware of?
@@ -25,7 +26,7 @@
 
 * Are there specific bugs, glitches, or shortcomings that users should be aware of?
 
-    To be done.
+    Sometimes, if the information is too long, it might go outside of the borders and it cannot be read unless you extend the page. 
 
 ## Societal impact:
 * **Positive impacts:**
