@@ -94,6 +94,7 @@ public class ResumeGenerator {
         bodyPanel.add(majorLabel);
         bodyPanel.add(gpaLabel);
         bodyPanel.add(honorsLabel);
+        bodyPanel.add(relCourseLabel);
         bodyPanel.add(space);
 
         JLabel workExperienceLabel = new JLabel(" Work Experience");
@@ -262,6 +263,6 @@ public class ResumeGenerator {
         }
 
         // Create and show an instance of the ResumeGenerator class
-        PrimaryInfo.createAndShowGUI();
+        createAndShowGUI(properties);
     }
 }
